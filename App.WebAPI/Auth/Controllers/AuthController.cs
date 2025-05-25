@@ -2,7 +2,7 @@
 using CleanArchMonolit.Application.Auth.Interfaces.AuthInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Auth.WebAPI.Controllers
+namespace App.WebAPI.Auth.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

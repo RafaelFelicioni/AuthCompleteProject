@@ -1,8 +1,9 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.AuthInterfaces;
+using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
-using CleanArchMonolit.Application.Validators;
 using CleanArchMonolit.Domain.Entities;
+using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
 using CleanArchMonolit.Shared.Responses;
 using CleanArchMonolit.Shared.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -22,10 +23,12 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.AuthService
     {
         private readonly JwtSettings _jwtSettings;
         private readonly PasswordHasher<User> _hasher = new();
+        private readonly IUserRepository _userRepository;
 
-        public AuthService(IOptions<JwtSettings> jwtOptions)
+        public AuthService(IOptions<JwtSettings> jwtOptions, IUserRepository userRepository)
         {
             _jwtSettings = jwtOptions.Value;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<string>> LoginAsync(LoginDTO request)
@@ -39,14 +42,12 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.AuthService
                 return Result<string>.Fail(errors);
             }
 
-            //repositorio
-            var user = new User();
-
+            
+            var user = await _userRepository.GetByEmailAsync(request.Email);
             if (user == null)
                 return Result<string>.Fail("Usuário ou senha inválidos.");
 
             var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
-
             if (result == PasswordVerificationResult.Failed)
                 return Result<string>.Fail("Usuário ou senha inválidos.");
 

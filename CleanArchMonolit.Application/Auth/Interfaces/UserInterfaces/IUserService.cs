@@ -1,4 +1,6 @@
-﻿using CleanArchMonolit.Domain.Entities;
+﻿using CleanArchMonolit.Application.Auth.DTO;
+using CleanArchMonolit.Domain.Entities;
+using CleanArchMonolit.Shared.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ namespace CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces
 {
     public interface IUserService
     {
-        Task<User> CreateAsync(User user);
+        Task<Result<bool>> CreateAsync(CreateUserDTO user);
+        Task<Result<bool>> UpdateAsync(UpdateUserDTO user);
     }
 }

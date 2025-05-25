@@ -1,5 +1,6 @@
 using CleanArchMonolit.Application.Auth.Interfaces.AuthInterfaces;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
+using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
 using CleanArchMonolit.Infrastructure.Auth.Services.AuthService;
 using CleanArchMonolit.Infrastructure.Auth.Services.UserService;
 using CleanArchMonolit.Infrastruture.Data;
@@ -36,10 +37,11 @@ builder.Services.AddAuthentication("Bearer")
                 Encoding.UTF8.GetBytes(jwtSettings.Secret))
         };
     });
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.ApplyCommonSettings(builder.Configuration);
 var app = builder.Build();
 app.UseAuthentication();
