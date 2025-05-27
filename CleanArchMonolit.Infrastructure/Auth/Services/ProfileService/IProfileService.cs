@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CleanArchMonolit.Domain.Auth.Entities;
+using CleanArchMonolit.Shared.Responses;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Services.ProfileService
 {
     public interface IProfileService
     {
+        Task<Result<Profiles>> GetAll();
     }
 }

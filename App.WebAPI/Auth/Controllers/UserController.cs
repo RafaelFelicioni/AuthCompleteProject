@@ -1,6 +1,5 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
-using CleanArchMonolit.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.WebAPI.Auth.Controllers
@@ -27,6 +26,13 @@ namespace App.WebAPI.Auth.Controllers
         public async Task<IActionResult> Update([FromBody] UpdateUserDTO dto)
         {
             var result = await _userService.UpdateAsync(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("GetUserInfo")]
+        public async Task<IActionResult> GetUserInfo([FromQuery] int id)
+        {
+            var result = await _userService.GetUserInfo(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

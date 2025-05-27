@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanArchMonolit.Domain.Entities
+namespace CleanArchMonolit.Domain.Auth.Entities
 {
     public class User
     {

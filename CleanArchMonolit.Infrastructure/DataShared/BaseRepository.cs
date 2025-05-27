@@ -1,19 +1,11 @@
-﻿using CleanArchMonolit.Shared.Infrastructure.Data.Interface;
+﻿using CleanArchMonolit.Infrastructure.DataShared.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CleanArchMonolit.Infrastructure.Auth.Data
+namespace CleanArchMonolit.Infrastructure.DataShared
 {
-    public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity> 
+    public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
         where TEntity : class
         where TContext : DbContext
     {
@@ -28,7 +20,6 @@ namespace CleanArchMonolit.Infrastructure.Auth.Data
             _dbSet = _context.Set<TEntity>();
         }
 
-
         protected BaseRepository(TContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -39,6 +30,11 @@ namespace CleanArchMonolit.Infrastructure.Auth.Data
         public virtual TContext GetDbContext() => _context;
 
         public virtual DbSet<TEntity> GetDbSet() => _dbSet;
+
+        public virtual async Task<List<TEntity>> GetAll()
+        {
+            return await GetDbSet().ToListAsync();
+        }
 
         public virtual IQueryable<TEntity> GetDbSetQuery() => _dbSet?.AsNoTracking();
 

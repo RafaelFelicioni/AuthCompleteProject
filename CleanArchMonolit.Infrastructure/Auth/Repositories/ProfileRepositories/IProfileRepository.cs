@@ -1,10 +1,5 @@
-﻿using CleanArchMonolit.Domain.Entities;
-using CleanArchMonolit.Shared.Infrastructure.Data.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CleanArchMonolit.Domain.Auth.Entities;
+using CleanArchMonolit.Infrastructure.DataShared.Interface;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories
 {

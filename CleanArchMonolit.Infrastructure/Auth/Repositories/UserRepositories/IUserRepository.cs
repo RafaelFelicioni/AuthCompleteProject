@@ -1,5 +1,4 @@
-﻿using CleanArchMonolit.Domain.Entities;
-using CleanArchMonolit.Shared.Infrastructure.Data.Interface;
+﻿using CleanArchMonolit.Infrastructure.DataShared.Interface;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
 {

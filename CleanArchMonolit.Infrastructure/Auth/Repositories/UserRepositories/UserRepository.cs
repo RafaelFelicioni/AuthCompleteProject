@@ -1,5 +1,5 @@
-﻿using CleanArchMonolit.Domain.Entities;
-using CleanArchMonolit.Infrastructure.Auth.Data;
+﻿using CleanArchMonolit.Domain.Auth.Entities;
+using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

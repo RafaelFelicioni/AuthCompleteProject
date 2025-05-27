@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CleanArchMonolit.Shared.Infrastructure.Data.Interface
+namespace CleanArchMonolit.Infrastructure.DataShared.Interface
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : class
     {
         DbSet<TEntity> GetDbSet();
+        Task<List<TEntity>> GetAll();
         IQueryable<TEntity> GetDbSetQuery();
         Task<TEntity> FindAsync(int key);
         Task<IQueryable<TEntity>> Where(Expression<Func<TEntity, bool>> expression);

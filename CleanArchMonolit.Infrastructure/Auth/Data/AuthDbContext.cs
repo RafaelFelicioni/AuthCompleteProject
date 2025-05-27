@@ -1,4 +1,5 @@
-﻿using CleanArchMonolit.Domain.Entities;
+﻿using CleanArchMonolit.Domain.Auth.Entities;
+using CleanArchMonolit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastruture.Data

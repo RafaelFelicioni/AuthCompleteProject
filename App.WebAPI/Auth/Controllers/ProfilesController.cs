@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
+﻿using CleanArchMonolit.Infrastructure.Auth.Services.ProfileService;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.WebAPI.Auth.Controllers
 {
@@ -7,16 +7,18 @@ namespace App.WebAPI.Auth.Controllers
     [Route("api/[controller]")]
     public class ProfilesController : ControllerBase
     {
-        public ProfilesController()
+        private readonly IProfileService _profileService;
+
+        public ProfilesController(IProfileService profileService)
         {
-         
-            
+            _profileService = profileService;
         }
 
-        [HttpGet("Get")]
-        public async Task<IActionResult> GetProfiles()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-            
+            var result = await _profileService.GetAll();
+            return result.Success ? Ok(result) : BadRequest(result);
         }
     }
 }

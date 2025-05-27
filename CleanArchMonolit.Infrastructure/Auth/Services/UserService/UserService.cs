@@ -1,8 +1,6 @@
-﻿using Azure.Core;
-using CleanArchMonolit.Application.Auth.DTO;
+﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
-using CleanArchMonolit.Domain.Entities;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
 using CleanArchMonolit.Shared.Responses;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +20,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
         {
             var validator = new CreateUserDTOValidator();
             var validation = validator.Validate(dto);
-            if (!validation.IsValid) 
+            if (!validation.IsValid)
             {
                 var errors = validation.Errors.Select(e => e.ErrorMessage).ToArray();
                 return Result<bool>.Fail(errors);
@@ -35,7 +33,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             }
 
             user = new User()
-            { 
+            {
                 Mail = dto.Email,
                 ProfileId = dto.ProfileId,
                 Username = dto.Username,
@@ -45,13 +43,13 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
             return Result<bool>.Ok(true);
-        }   
-        
+        }
+
         public async Task<Result<bool>> UpdateAsync(UpdateUserDTO dto)
         {
             var validator = new UpdateUserDTOValidator();
             var validation = validator.Validate(dto);
-            if (!validation.IsValid) 
+            if (!validation.IsValid)
             {
                 var errors = validation.Errors.Select(e => e.ErrorMessage).ToArray();
                 return Result<bool>.Fail(errors);
@@ -76,6 +74,17 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
 
             await _userRepository.SaveChangesAsync();
             return Result<bool>.Ok(true);
+        }
+
+        public async Task<Result<User>> GetUserInfo(int id)
+        {
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+            {
+                Result<User>.Fail("Não foi possivel encontrar o usuário informado");
+            }
+
+            return Result<User>.Ok(user);
         }
     }
 }
