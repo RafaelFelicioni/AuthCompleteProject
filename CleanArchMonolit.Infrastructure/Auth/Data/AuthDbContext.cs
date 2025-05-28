@@ -1,5 +1,4 @@
 ﻿using CleanArchMonolit.Domain.Auth.Entities;
-using CleanArchMonolit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastruture.Data
@@ -10,6 +9,7 @@ namespace CleanArchMonolit.Infrastruture.Data
 
         public DbSet<Profiles> Profiles { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<SystemPermission> Permissions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Profiles>().HasData(

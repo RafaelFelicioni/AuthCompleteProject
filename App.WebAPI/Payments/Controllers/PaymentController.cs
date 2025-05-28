@@ -8,7 +8,7 @@ namespace App.WebAPI.Payments.Controllers
     {
         public PaymentController()
         {
-            
+
         }
     }
 }

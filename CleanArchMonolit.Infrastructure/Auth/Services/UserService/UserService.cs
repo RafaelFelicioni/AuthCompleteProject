@@ -1,6 +1,7 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
+using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
 using CleanArchMonolit.Shared.Responses;
 using Microsoft.AspNetCore.Identity;

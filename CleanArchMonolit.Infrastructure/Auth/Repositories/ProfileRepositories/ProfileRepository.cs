@@ -2,6 +2,7 @@
 using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories
 {
@@ -14,6 +15,11 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public virtual async Task<Profiles> GetById(int id)
+        {
+            return await GetDbSet().FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace App.WebAPI.Company.Controllers
     {
         public CompanyController()
         {
-            
+
         }
     }
 }

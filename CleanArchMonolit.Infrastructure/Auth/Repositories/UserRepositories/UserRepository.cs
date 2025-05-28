@@ -3,11 +3,6 @@ using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
 {
@@ -25,7 +20,8 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
         public async Task<User> GetByEmailAsync(string email)
         {
             return await GetDbSet()
-                .Include(u => u.Profile) // se precisar do perfil no JWT
+                .Include(u => u.Profile)// se precisar do perfil no JWT
+                .Include(x => x.UserPermissions)
                 .FirstOrDefaultAsync(u => u.Mail == email);
         }
     }

@@ -5,5 +5,6 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories
 {
     public interface IProfileRepository : IRepository<Profiles>
     {
+        Task<Profiles> GetById(int id);
     }
 }

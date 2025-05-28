@@ -19,7 +19,17 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.Configure<JwtSettings>( 
+builder.Services.AddAuthorization(options =>
+{
+    var permissions = new[] { "" }; // TODO RAFAEL: colocar todas as permissões aqui
+
+    foreach (var permission in permissions)
+    {
+        options.AddPolicy(permission, policy =>
+            policy.Requirements.Add(new PermissionRequirement(permission)));
+    }
+});
+builder.Services.Configure<JwtSettings>(
 builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -38,7 +48,6 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

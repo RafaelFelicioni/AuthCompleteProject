@@ -13,5 +13,6 @@ namespace CleanArchMonolit.Domain.Auth.Entities
         public string PasswordHash { get; set; } = null!;
         public int ProfileId { get; set; }
         public Profiles Profile { get; set; } = null!;
+        public ICollection<UserSystemPermissions> UserPermissions { get; set; }
     }
 }

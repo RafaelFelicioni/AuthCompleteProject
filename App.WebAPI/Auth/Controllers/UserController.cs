@@ -35,5 +35,12 @@ namespace App.WebAPI.Auth.Controllers
             var result = await _userService.GetUserInfo(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+
+        [HttpPost("SetEmployeeScreens")]
+        public async Task<IActionResult> SetEmployeeScreens([FromBody] EmployeeScreensDTO dto)
+        {
+            var result = await _userService.SetEmployeeScreens(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
     }
 }

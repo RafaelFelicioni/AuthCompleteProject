@@ -4,7 +4,7 @@ using CleanArchMonolit.Shared.Responses;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Services.ProfileService
 {
-    public class ProfileService
+    public class ProfileService : IProfileService
     {
         private readonly IProfileRepository _profileRepository;
 
@@ -22,6 +22,17 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.ProfileService
             }
 
             return Result<List<Profiles>>.Ok(profiles);
+        }
+
+        public async Task<Result<Profiles>> GetById(int id)
+        {
+            var profile = await _profileRepository.GetById(id);
+            if (profile == null)
+            {
+                return Result<Profiles>.Fail("Ocorreu um erro ao buscar o perfil");
+            }
+
+            return Result<Profiles>.Ok(profile);
         }
     }
 }
