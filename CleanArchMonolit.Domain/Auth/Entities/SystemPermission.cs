@@ -10,6 +10,8 @@ namespace CleanArchMonolit.Domain.Auth.Entities
         [MaxLength(50)]
         public string PermissionName { get; set; }
 
+        public bool AdminOnly { get; set; }
+
         public ICollection<UserSystemPermissions> UserPermissions { get; set; }
     }
 }

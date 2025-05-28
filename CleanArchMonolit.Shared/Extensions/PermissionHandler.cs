@@ -10,7 +10,7 @@ namespace CleanArchMonolit.Shared.Extensions
         {
             var hasPermission = context.User.Claims.Any(c =>
                 c.Type == "permissions" &&
-                c.Value == requirement.Permission);
+                c.Value == requirement.Permission) || context.User.Claims.Any(c => c.Type == "Role" && c.Value == "Admin");
 
             if (hasPermission)
                 context.Succeed(requirement);

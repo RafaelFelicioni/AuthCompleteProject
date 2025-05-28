@@ -1,4 +1,5 @@
-﻿using CleanArchMonolit.Infrastructure.Auth.Services.ProfileService;
+﻿using CleanArchMonolit.Application.Auth.DTO;
+using CleanArchMonolit.Application.Auth.Interfaces.ProfileInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,17 +34,17 @@ namespace App.WebAPI.Auth.Controllers
 
         [HttpPost("AddProfile")]
         [Authorize(Policy = "AP")]
-        public async Task<IActionResult> AddProfile([FromQuery] int id)
+        public async Task<IActionResult> AddProfile([FromBody] AddProfileDTO dto)
         {
-            var result = await _profileService.GetById(id);
+            var result = await _profileService.AddProfile(dto);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("UpdateProfile")]
         [Authorize(Policy = "UP")]
-        public async Task<IActionResult> UpdateProfile([FromQuery] int id)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDTO dto)
         {
-            var result = await _profileService.GetById(id);
+            var result = await _profileService.UpdateProfile(dto);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

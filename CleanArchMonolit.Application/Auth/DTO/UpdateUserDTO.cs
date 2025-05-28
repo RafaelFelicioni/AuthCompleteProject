@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanArchMonolit.Application.Auth.DTO
+﻿namespace CleanArchMonolit.Application.Auth.DTO
 {
     public class UpdateUserDTO
     {
@@ -15,5 +9,7 @@ namespace CleanArchMonolit.Application.Auth.DTO
         public string Email { get; set; } = string.Empty;
         public int ProfileId { get; set; }
         public int CompanyId { get; set; }
+
+        public List<int> PermissionList { get; set; } = new List<int>();
     }
 }

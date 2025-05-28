@@ -9,6 +9,5 @@ namespace CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces
         Task<Result<bool>> CreateAsync(CreateUserDTO user);
         Task<Result<bool>> UpdateAsync(UpdateUserDTO user);
         Task<Result<User>> GetUserInfo(int id);
-        Task<Result<bool>> SetEmployeeScreens(EmployeeScreensDTO dto);
     }
 }
