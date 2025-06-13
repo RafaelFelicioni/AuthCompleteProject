@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CleanArchMonolit.Application.Auth.Interfaces.PermissionsInterfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.WebAPI.Auth.Controllers
 {
@@ -6,9 +7,11 @@ namespace App.WebAPI.Auth.Controllers
     [Route("api/[controller]")]
     public class PermissionsController : ControllerBase
     {
-        public PermissionsController()
-        {
+        private readonly IPermissionInterface _permissionService;
 
+        public PermissionsController(IPermissionInterface permissionService)
+        {
+            _permissionService = permissionService;
         }
     }
 }

@@ -51,6 +51,8 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.ProfileService
                 return Result<bool>.Fail("Já existe um perfil com este nome, por favor altere o nome e tente novamente, ou utilize o perfil: " + dto.ProfileName);
             }
 
+            profile.ProfileName = dto.ProfileName;
+
             await _profileRepository.SaveChangesAsync();
             return Result<bool>.Ok(true);
         }

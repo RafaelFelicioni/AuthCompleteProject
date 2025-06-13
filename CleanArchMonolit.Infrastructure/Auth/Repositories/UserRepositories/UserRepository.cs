@@ -1,4 +1,5 @@
-﻿using CleanArchMonolit.Domain.Auth.Entities;
+﻿#nullable disable
+using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,11 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
                 .Include(u => u.Profile)// se precisar do perfil no JWT
                 .Include(x => x.UserPermissions)
                 .FirstOrDefaultAsync(u => u.Mail == email);
+        }
+
+        public async Task<User> GetById(int id)
+        {
+            return await GetDbSet().FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
