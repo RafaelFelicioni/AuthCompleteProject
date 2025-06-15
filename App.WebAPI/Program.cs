@@ -1,8 +1,5 @@
-using CleanArchMonolit.Application.Auth.Interfaces.AuthInterfaces;
-using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
-using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
-using CleanArchMonolit.Infrastructure.Auth.Services.AuthService;
-using CleanArchMonolit.Infrastructure.Auth.Services.UserService;
+using App.WebAPI.Utils;
+using CleanArchMonolit.Infrastructure.Company.Data;
 using CleanArchMonolit.Infrastruture.Data;
 using CleanArchMonolit.Shared.Extensions;
 using CleanArchMonolit.Shared.Settings;
@@ -18,6 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<CompanyDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthorization(options =>
 {
@@ -48,10 +48,9 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.ApplyCommonSettings(builder.Configuration);
+builder.AddClients();
+builder.AddServices();
+builder.AddRepositories();
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();

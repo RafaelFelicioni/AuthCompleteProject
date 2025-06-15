@@ -3,6 +3,8 @@ using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
 using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
+using CleanArchMonolit.Shared.DTO.Grid;
+using CleanArchMonolit.Shared.Extensions;
 using CleanArchMonolit.Shared.Responses;
 using CleanArchMonolit.Shared.Utils;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +44,21 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
                 Mail = dto.Email,
                 ProfileId = dto.ProfileId,
                 Username = dto.Username,
+                CompanyId = dto.CompanyId,
+                UserPermissions = new List<UserSystemPermissions>()
             };
+
+            if (dto.PermissionList.Any())
+            {
+                foreach (var permission in dto.PermissionList)
+                {
+                    user.UserPermissions.Add(new UserSystemPermissions()
+                    {
+                        UserId = user.Id,
+                        SystemPermissionId = permission
+                    });
+                }
+            }
 
             user.PasswordHash = _hasher.HashPassword(user, dto.Password);
             await _userRepository.AddAsync(user);
@@ -112,6 +128,28 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             }
 
             return Result<User>.Ok(user);
+        }
+
+        public async Task<Result<GridResponseDTO<ReturnUsersGridDTO>>> GetUsersGrid(GetUsersGrid dto)
+        {
+            var response = new GridResponseDTO<ReturnUsersGridDTO>();
+            var userIsAdmin = _httpContext.User.IsAdmin();
+            if (!userIsAdmin)
+                dto.CompanyId = _httpContext.User.GetCompanyId();
+            else
+                dto.CompanyId = null;
+
+            var sortDir = false;
+            if (string.IsNullOrWhiteSpace(dto.SortDirection) || dto.SortDirection.ToLower() == "asc")
+            {
+                sortDir = true;
+            }
+            var usersQueryable = await _userRepository.GetUserGrid(dto);
+            usersQueryable.LinqOrderBy(dto.SortBy, sortDir);
+            response.TotalItems = usersQueryable.Count();
+            response.Page = dto.Page;
+            response.PageSize = dto.PageSize;
+            var companyList =
         }
     }
 }

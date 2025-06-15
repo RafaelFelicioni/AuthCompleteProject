@@ -1,4 +1,5 @@
-﻿using CleanArchMonolit.Domain.Auth.Entities;
+﻿using CleanArchMonolit.Application.Auth.DTO;
+using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.DataShared.Interface;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
@@ -7,5 +8,6 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
     {
         Task<User> GetByEmailAsync(string email);
         Task<User> GetById(int id);
+        Task<IQueryable<ReturnUsersGridDTO>> GetUserGrid(GetUsersGrid dto);
     }
 }

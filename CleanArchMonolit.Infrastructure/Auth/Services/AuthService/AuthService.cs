@@ -58,6 +58,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.AuthService
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Profile.ProfileName),
                 new Claim("ProfileId", user.Profile.Id.ToString()),
+                new Claim("CompanyId", user.CompanyId.ToString()),
             };
 
             foreach (var item in user.UserPermissions)

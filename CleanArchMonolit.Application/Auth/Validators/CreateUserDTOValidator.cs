@@ -1,10 +1,5 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArchMonolit.Application.Auth.Validators
 {
@@ -20,6 +15,7 @@ namespace CleanArchMonolit.Application.Auth.Validators
                 .Matches("[0-9]").WithMessage("A senha deve conter pelo menos um número.")
                 .Matches("[^a-zA-Z0-9]").WithMessage("A senha deve conter pelo menos um símbolo.");
             RuleFor(x => x.ProfileId).GreaterThan(0).WithMessage("Perfil inválido.");
+            RuleFor(x => x.Email).EmailAddress().WithMessage("E-mail inválido");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CleanArchMonolit.Infrastructure.Auth.Services.PermissionService
 {
-    public class PermissionService : IPermissionInterface
+    public class PermissionService : IPermissionService
     {
         public PermissionService()
         {

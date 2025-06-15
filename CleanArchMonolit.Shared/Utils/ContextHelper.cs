@@ -23,5 +23,20 @@ namespace CleanArchMonolit.Shared.Utils
         {
             return Convert.ToInt32(user.Claims.FirstOrDefault(x => x.Type == "ProfileId")?.Value ?? "0");
         }
+
+        public static int GetCompanyId(this ClaimsPrincipal user)
+        {
+            return Convert.ToInt32(user.Claims.FirstOrDefault(x => x.Type == "CompanyId")?.Value ?? "0");
+        }
+
+        public static bool IsAdmin(this ClaimsPrincipal user)
+        {
+            var role = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+            if (role == "Admin")
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -42,5 +42,12 @@ namespace App.WebAPI.Auth.Controllers
             var result = await _userService.ChangePasswordUser(oldPassword, newPassword);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+
+        [HttpPost("GetUsersGrid")]
+        public async Task<IActionResult> GetUsersGrid(GetUsersGrid dto)
+        {
+            var result = await _userService.GetUsersGrid(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
     }
 }

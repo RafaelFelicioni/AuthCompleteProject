@@ -11,6 +11,7 @@ namespace CleanArchMonolit.Domain.Auth.Entities
         public string Mail { get; set; }
         [MaxLength(800)]
         public string PasswordHash { get; set; } = null!;
+        public int CompanyId { get; set; }
         public int ProfileId { get; set; }
         public Profiles Profile { get; set; } = null!;
         public ICollection<UserSystemPermissions> UserPermissions { get; set; }
