@@ -3,7 +3,6 @@ using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
@@ -11,12 +10,10 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
     public class UserRepository : BaseRepository<User, AuthDbContext>, IUserRepository
     {
         private readonly AuthDbContext _context;
-        private readonly HttpContext _httpContext;
 
-        public UserRepository(AuthDbContext context, IHttpContextAccessor httpContextAccessor) : base(context, httpContextAccessor)
+        public UserRepository(AuthDbContext context) : base(context)
         {
             _context = context;
-            _httpContext = httpContextAccessor?.HttpContext;
         }
 
         public async Task<User> GetByEmailAsync(string email)
@@ -29,10 +26,10 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
 
         public async Task<User> GetById(int id)
         {
-            return await GetDbSet().FirstOrDefaultAsync(x => x.Id == id);
+            return await GetDbSet().Include(x => x.UserPermissions).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IQueryable<ReturnUsersGridDTO>> GetUserGrid(GetUsersGrid dto)
+        public IQueryable<ReturnUsersGridDTO> GetUserGrid(GetUsersGrid dto)
         {
             return GetDbSet().Where(x => ((!dto.CompanyId.HasValue) || (dto.CompanyId.HasValue && dto.CompanyId.Value > 0 && x.CompanyId == dto.CompanyId.Value)) &&
                 (!dto.UserId.HasValue || (dto.UserId.HasValue && dto.UserId.Value < 1) || (dto.UserId.HasValue && dto.UserId.Value == x.Id)) &&

@@ -9,6 +9,7 @@ using CleanArchMonolit.Infrastructure.Auth.Services.AuthService;
 using CleanArchMonolit.Infrastructure.Auth.Services.PermissionService;
 using CleanArchMonolit.Infrastructure.Auth.Services.ProfileService;
 using CleanArchMonolit.Infrastructure.Auth.Services.UserService;
+using CleanArchMonolit.Infrastructure.DataShared.HttpContextService;
 using CleanArchMonolit.Shared.Extensions;
 
 namespace App.WebAPI.Utils
@@ -26,6 +27,7 @@ namespace App.WebAPI.Utils
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IPermissionService, PermissionService>();
+            builder.Services.AddScoped<IHttpContextService, HttpContextService>();
             builder.Services.ApplyCommonSettings(builder.Configuration);
         }
 

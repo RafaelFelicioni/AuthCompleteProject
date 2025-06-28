@@ -2,31 +2,41 @@
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
 using CleanArchMonolit.Domain.Auth.Entities;
+using CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
+using CleanArchMonolit.Infrastructure.DataShared.HttpContextService;
 using CleanArchMonolit.Shared.DTO.Grid;
 using CleanArchMonolit.Shared.Extensions;
 using CleanArchMonolit.Shared.Responses;
-using CleanArchMonolit.Shared.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly HttpContext _httpContext;
+        private readonly IProfileRepository _profileRepository;
+        private readonly IHttpContextService _httpContext;
         private readonly PasswordHasher<User> _hasher = new();
-        public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository, IHttpContextService httpContext, IProfileRepository profileRepository)
         {
             _userRepository = userRepository;
-            _httpContext = httpContextAccessor?.HttpContext;
+            _profileRepository = profileRepository;
+            _httpContext = httpContext;
         }
 
         public async Task<Result<bool>> CreateAsync(CreateUserDTO dto)
         {
             var validator = new CreateUserDTOValidator();
             var validation = validator.Validate(dto);
+            var isAdmin = _httpContext.IsAdmin;
+            var userCompanyId = _httpContext.CompanyId;
+            if (!isAdmin && userCompanyId != dto.CompanyId)
+            {
+                return Result<bool>.Fail("Não foi possível criar o usuário, por favor entre em contato com os canais de comunicação");
+            }
+
             if (!validation.IsValid)
             {
                 var errors = validation.Errors.Select(e => e.ErrorMessage).ToArray();
@@ -107,7 +117,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
 
         public async Task<Result<bool>> ChangePasswordUser(string oldPassword, string newPassword)
         {
-            var user = await _userRepository.GetById(_httpContext.User.GetUserId());
+            var user = await _userRepository.GetById(_httpContext.UserId);
             if (user == null)
                 Result<bool>.Fail("Não foi possivel encontrar o usuário informado");
 
@@ -121,7 +131,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
 
         public async Task<Result<User>> GetUserInfo(int id)
         {
-            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _userRepository.GetById(id);
             if (user == null)
             {
                 Result<User>.Fail("Não foi possivel encontrar o usuário informado");
@@ -133,9 +143,9 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
         public async Task<Result<GridResponseDTO<ReturnUsersGridDTO>>> GetUsersGrid(GetUsersGrid dto)
         {
             var response = new GridResponseDTO<ReturnUsersGridDTO>();
-            var userIsAdmin = _httpContext.User.IsAdmin();
+            var userIsAdmin = _httpContext.IsAdmin;
             if (!userIsAdmin)
-                dto.CompanyId = _httpContext.User.GetCompanyId();
+                dto.CompanyId = _httpContext.CompanyId;
             else
                 dto.CompanyId = null;
 
@@ -144,12 +154,20 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             {
                 sortDir = true;
             }
-            var usersQueryable = await _userRepository.GetUserGrid(dto);
+            var usersQueryable = _userRepository.GetUserGrid(dto);
             usersQueryable.LinqOrderBy(dto.SortBy, sortDir);
             response.TotalItems = usersQueryable.Count();
             response.Page = dto.Page;
             response.PageSize = dto.PageSize;
-            var companyList =
+            response.Items = await usersQueryable.Select(x => new ReturnUsersGridDTO()
+            {
+                CompanyId = x.CompanyId,
+                CompanyName = x.CompanyName,
+                ProfileName = x.ProfileName,
+                UserName = x.UserName,
+            }).Skip(dto.Skip).Take(dto.Take).ToListAsync();
+
+            return Result<GridResponseDTO<ReturnUsersGridDTO>>.Ok(response);
         }
     }
 }

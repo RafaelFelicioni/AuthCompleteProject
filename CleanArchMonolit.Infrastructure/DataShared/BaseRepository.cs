@@ -95,7 +95,7 @@ namespace CleanArchMonolit.Infrastructure.DataShared
         }
 
         public virtual async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
-
+        #region CouldBeUsedSomeday
         //public async Task SaveChangesWithAuditAsync()
         //{
         //    var changes = _context.ChangeTracker.Entries()
@@ -305,5 +305,6 @@ namespace CleanArchMonolit.Infrastructure.DataShared
         //        throw new Exception($"entity {entityName} is not registered in enum ChangeLogTable");
         //    }
         //}
+        #endregion
     }
 }
