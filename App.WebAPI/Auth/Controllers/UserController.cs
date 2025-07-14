@@ -1,5 +1,6 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.WebAPI.Auth.Controllers
@@ -16,6 +17,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("Create")]
+        [Authorize(Policy = "")]
         public async Task<IActionResult> Create([FromBody] CreateUserDTO dto)
         {
             var result = await _userService.CreateAsync(dto);
@@ -23,6 +25,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("Update")]
+        [Authorize(Policy = "test")]
         public async Task<IActionResult> Update([FromBody] UpdateUserDTO dto)
         {
             var result = await _userService.UpdateAsync(dto);
@@ -30,6 +33,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("GetUserInfo")]
+        [Authorize(Policy = "")]
         public async Task<IActionResult> GetUserInfo([FromQuery] int id)
         {
             var result = await _userService.GetUserInfo(id);
@@ -37,6 +41,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("ChangePassword")]
+        [Authorize(Policy = "")]
         public async Task<IActionResult> ChangePasswordUser(string oldPassword, string newPassword)
         {
             var result = await _userService.ChangePasswordUser(oldPassword, newPassword);
@@ -44,6 +49,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("GetUsersGrid")]
+        [Authorize(Policy = "")]
         public async Task<IActionResult> GetUsersGrid(GetUsersGrid dto)
         {
             var result = await _userService.GetUsersGrid(dto);

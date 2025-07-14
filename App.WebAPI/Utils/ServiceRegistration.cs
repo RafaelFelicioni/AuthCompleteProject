@@ -11,6 +11,7 @@ using CleanArchMonolit.Infrastructure.Auth.Services.ProfileService;
 using CleanArchMonolit.Infrastructure.Auth.Services.UserService;
 using CleanArchMonolit.Infrastructure.DataShared.HttpContextService;
 using CleanArchMonolit.Shared.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.WebAPI.Utils
 {
@@ -23,19 +24,25 @@ namespace App.WebAPI.Utils
 
         public static void AddServices(this WebApplicationBuilder builder)
         {
+            #region AuthServices
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IPermissionService, PermissionService>();
+            #endregion
+
             builder.Services.AddScoped<IHttpContextService, HttpContextService>();
+            builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
             builder.Services.ApplyCommonSettings(builder.Configuration);
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
         {
+            #region AuthRepos
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            #endregion
         }
     }
 }
