@@ -1,10 +1,12 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
 using CleanArchMonolit.Application.Auth.Validators;
+using CleanArchMonolit.Application.Company.Interfaces.CompanyInterfaces;
 using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
 using CleanArchMonolit.Infrastructure.DataShared.HttpContextService;
+using CleanArchMonolit.Shared.DTO;
 using CleanArchMonolit.Shared.DTO.Grid;
 using CleanArchMonolit.Shared.Extensions;
 using CleanArchMonolit.Shared.Responses;
@@ -17,12 +19,14 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IProfileRepository _profileRepository;
+        private readonly ICompanyService _companyService;
         private readonly IHttpContextService _httpContext;
         private readonly PasswordHasher<User> _hasher = new();
-        public UserService(IUserRepository userRepository, IHttpContextService httpContext, IProfileRepository profileRepository)
+        public UserService(IUserRepository userRepository, IHttpContextService httpContext, IProfileRepository profileRepository, ICompanyService companyService)
         {
             _userRepository = userRepository;
             _profileRepository = profileRepository;
+            _companyService = companyService;
             _httpContext = httpContext;
         }
 
@@ -32,6 +36,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             var validation = validator.Validate(dto);
             var isAdmin = _httpContext.IsAdmin;
             var userCompanyId = _httpContext.CompanyId;
+
             if (!isAdmin && userCompanyId != dto.CompanyId)
             {
                 return Result<bool>.Fail("Não foi possível criar o usuário, por favor entre em contato com os canais de comunicação");
@@ -49,12 +54,19 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
                 return Result<bool>.Fail("Usuário já existe na base de dados com este email");
             }
 
+            var checkTaxId = await _userRepository.CheckIfTaxIdExists(dto.TaxId);
+            if (checkTaxId)
+            {
+                return Result<bool>.Fail("Já existe um usuário cadastrado com esse CPF, por favor corrija as informações e tente novamente.");
+            }
+
             user = new User()
             {
                 Mail = dto.Email,
                 ProfileId = dto.ProfileId,
                 Username = dto.Username,
                 CompanyId = dto.CompanyId,
+                TaxId = dto.TaxId,
                 UserPermissions = new List<UserSystemPermissions>()
             };
 
@@ -97,6 +109,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             user.Mail = dto.Email;
             user.ProfileId = dto.ProfileId;
             user.Username = dto.Username;
+            user.CompanyId = dto.CompanyId;
             if (user.UserPermissions == null)
                 user.UserPermissions = new List<UserSystemPermissions>();
 
@@ -119,7 +132,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
         {
             var user = await _userRepository.GetById(_httpContext.UserId);
             if (user == null)
-                Result<bool>.Fail("Não foi possivel encontrar o usuário informado");
+                return Result<bool>.Fail("Não foi possivel encontrar o usuário informado");
 
             var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, oldPassword);
             if (result == PasswordVerificationResult.Failed)
@@ -129,15 +142,22 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             return Result<bool>.Ok(true);
         }
 
-        public async Task<Result<User>> GetUserInfo(int id)
+        public async Task<Result<UserDTO>> GetUserInfo(int id)
         {
             var user = await _userRepository.GetById(id);
             if (user == null)
             {
-                Result<User>.Fail("Não foi possivel encontrar o usuário informado");
+                return Result<UserDTO>.Fail("Não foi possivel encontrar o usuário informado");
             }
 
-            return Result<User>.Ok(user);
+            UserDTO userDTO = user;
+            //var company = await _companyService.GetCompanyInfo(user.CompanyId);
+            //if (company != null && company.Success)
+            //{
+            //    userDTO.CompanyName = company.Data.CompanyName;
+            //    userDTO.CompanyTaxId = company.Data.TaxId;
+            //}
+            return Result<UserDTO>.Ok(user);
         }
 
         public async Task<Result<GridResponseDTO<ReturnUsersGridDTO>>> GetUsersGrid(GetUsersGrid dto)
@@ -156,18 +176,44 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             }
             var usersQueryable = _userRepository.GetUserGrid(dto);
             usersQueryable.LinqOrderBy(dto.SortBy, sortDir);
+
             response.TotalItems = usersQueryable.Count();
             response.Page = dto.Page;
             response.PageSize = dto.PageSize;
             response.Items = await usersQueryable.Select(x => new ReturnUsersGridDTO()
             {
                 CompanyId = x.CompanyId,
-                CompanyName = x.CompanyName,
                 ProfileName = x.ProfileName,
                 UserName = x.UserName,
             }).Skip(dto.Skip).Take(dto.Take).ToListAsync();
-
+            if (response.Items.Count > 0)
+            {
+                var companyIds = response.Items.Select(x => x.CompanyId).ToList();
+                //var companies = await _companyService.GetCompanyList(companyIds);
+                foreach (var item in response.Items)
+                {
+                    //var company = companies.Data.FirstOrDefault(x => x.Id == item.CompanyId);
+                    //if (company != null)
+                    //{
+                    //    item.CompanyName = company.CompanyName;
+                    //}
+                }
+            }
             return Result<GridResponseDTO<ReturnUsersGridDTO>>.Ok(response);
+        }
+
+        public async Task<Result<List<SelectPatternDTO>>> SelectUsers(string term)
+        {
+            var isAdmin = _httpContext.IsAdmin;
+            var companyid = _httpContext.CompanyId;
+
+            var usersSelect = await _userRepository.GetSelectUser(term, companyid, isAdmin);
+            if (usersSelect != null)
+            {
+                return Result<List<SelectPatternDTO>>.Ok(usersSelect);
+            }
+
+            return Result<List<SelectPatternDTO>>.Fail("Ocorreu um erro ao buscar os usuários");
         }
     }
 }

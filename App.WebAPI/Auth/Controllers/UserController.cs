@@ -17,7 +17,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("Create")]
-        [Authorize(Policy = "")]
+        [Authorize(Policy = "teste")]
         public async Task<IActionResult> Create([FromBody] CreateUserDTO dto)
         {
             var result = await _userService.CreateAsync(dto);
@@ -25,7 +25,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("Update")]
-        [Authorize(Policy = "test")]
+        //[Authorize(Policy = "test")]
         public async Task<IActionResult> Update([FromBody] UpdateUserDTO dto)
         {
             var result = await _userService.UpdateAsync(dto);
@@ -53,6 +53,14 @@ namespace App.WebAPI.Auth.Controllers
         public async Task<IActionResult> GetUsersGrid(GetUsersGrid dto)
         {
             var result = await _userService.GetUsersGrid(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("SelectUsers")]
+        [Authorize(Policy = "")]
+        public async Task<IActionResult> SelectUsers(string term)
+        {
+            var result = await _userService.SelectUsers(term);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

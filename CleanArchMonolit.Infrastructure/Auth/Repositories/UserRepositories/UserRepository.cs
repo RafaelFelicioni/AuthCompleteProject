@@ -3,6 +3,7 @@ using CleanArchMonolit.Application.Auth.DTO;
 using CleanArchMonolit.Domain.Auth.Entities;
 using CleanArchMonolit.Infrastructure.DataShared;
 using CleanArchMonolit.Infrastruture.Data;
+using CleanArchMonolit.Shared.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
@@ -29,6 +30,11 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
             return await GetDbSet().Include(x => x.UserPermissions).FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<bool> CheckIfTaxIdExists(string taxId)
+        {
+            return await GetDbSet().AnyAsync(x => x.TaxId == taxId);
+        }
+
         public IQueryable<ReturnUsersGridDTO> GetUserGrid(GetUsersGrid dto)
         {
             return GetDbSet().Where(x => ((!dto.CompanyId.HasValue) || (dto.CompanyId.HasValue && dto.CompanyId.Value > 0 && x.CompanyId == dto.CompanyId.Value)) &&
@@ -40,6 +46,18 @@ namespace CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories
                  ProfileName = x.Profile.ProfileName,
                  CompanyId = x.CompanyId
              });
+        }
+
+        public async Task<List<SelectPatternDTO>> GetSelectUser(string term, int companyId, bool isAdmin)
+        {
+            return await GetDbSet().Where(x => (!isAdmin && x.CompanyId == companyId && (EF.Functions.Like(x.TaxId, $"%{term}%")
+                || EF.Functions.Like(x.Username, $"%{term}%"))) ||
+                (isAdmin && (EF.Functions.Like(x.TaxId, $"%{term}%") || EF.Functions.Like(x.Username, $"%{term}%")))
+                    ).Select(x => new SelectPatternDTO()
+                    {
+                        Value = x.Id,
+                        Info = $"{x.Username} (${x.TaxId})"
+                    }).ToListAsync();
         }
     }
 }

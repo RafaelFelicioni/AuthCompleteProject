@@ -7,6 +7,7 @@
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public int ProfileId { get; set; }
+        public string TaxId { get; set; }
         public int CompanyId { get; set; }
         public List<int> PermissionList { get; set; } = new List<int>();
     }

@@ -7,5 +7,7 @@ namespace CleanArchMonolit.Application.Auth.DTO
         public int? UserId { get; set; }
         public int? CompanyId { get; set; }
         public int? ProfileId { get; set; }
+        public string CompanyName { get; set; }
+        public string CompanyTaxId { get; set; }
     }
 }

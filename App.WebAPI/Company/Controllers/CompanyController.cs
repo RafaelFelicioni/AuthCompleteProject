@@ -14,29 +14,5 @@ namespace App.WebAPI.Company.Controllers
         {
             _companyService = companyService;
         }
-
-        // Criar empresa
-        [HttpPost("Create")]
-        [Authorize(Policy = "")]
-        public async Task<IActionResult> CreateCompany()
-        {
-            var resp = _companyService
-        }
-
-        // Atualizar empresa
-        [HttpPost("Update")]
-        [Authorize(Policy = "")]
-
-        // Grid das empresas (somente admin)
-        [HttpPost("Grid")]
-        [Authorize(Policy = "")]
-
-        [HttpGet("GetById")]
-        [Authorize(Policy = "")]
-
-        // GetById
-        [HttpGet("GetList")]
-        [Authorize(Policy = "")]
-
     }
 }

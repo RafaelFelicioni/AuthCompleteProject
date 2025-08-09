@@ -17,7 +17,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpGet("GetAll")]
-        [Authorize(Policy = "GP")]
+        [Authorize(Policy = "")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _profileService.GetAll();
@@ -25,7 +25,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpGet("GetById")]
-        [Authorize(Policy = "PostLogin")]
+        //[Authorize(Policy = "")]
         public async Task<IActionResult> GetById([FromQuery] int id)
         {
             var result = await _profileService.GetById(id);
@@ -33,7 +33,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("AddProfile")]
-        [Authorize(Policy = "AP")]
+        //[Authorize(Policy = "")]
         public async Task<IActionResult> AddProfile([FromBody] AddProfileDTO dto)
         {
             var result = await _profileService.AddProfile(dto);
@@ -41,7 +41,7 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("UpdateProfile")]
-        [Authorize(Policy = "UP")]
+        //[Authorize(Policy = "")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDTO dto)
         {
             var result = await _profileService.UpdateProfile(dto);

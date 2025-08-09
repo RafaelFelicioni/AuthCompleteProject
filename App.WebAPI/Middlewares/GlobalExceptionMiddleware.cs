@@ -41,12 +41,12 @@ namespace CleanArchMonolit.Shared.Middlewares
                 }
 
                 _logger.LogError(
-                ex,
-                "Unhandled exception in {Controller}.{Action}: {Message}",
-                controllerName,
-                actionName,
-                ex.Message
-            );
+                    ex,
+                    "Unhandled exception in {Controller}.{Action}: {Message}",
+                    controllerName,
+                    actionName,
+                    ex.Message
+                );
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
                 var result = Result<object>.Fail("Ocorreu um erro interno, por favor tente novamente, caso o erro persista, entre em contato com o suporte.");

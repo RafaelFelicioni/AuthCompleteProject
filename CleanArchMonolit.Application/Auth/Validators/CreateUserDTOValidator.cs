@@ -1,4 +1,5 @@
 ﻿using CleanArchMonolit.Application.Auth.DTO;
+using CleanArchMonolit.Shared.Utils;
 using FluentValidation;
 
 namespace CleanArchMonolit.Application.Auth.Validators
@@ -8,6 +9,8 @@ namespace CleanArchMonolit.Application.Auth.Validators
         public CreateUserDTOValidator()
         {
             RuleFor(x => x.Username).NotEmpty().WithMessage("O nome de usuário é obrigatório.");
+            RuleFor(x => x.TaxId).NotEmpty().WithMessage("CPF/CNPJ não pode ser vazio");
+            RuleFor(x => x.TaxId).TaxId();
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("A senha é obrigatória.")
                 .MinimumLength(8).WithMessage("A senha deve ter pelo menos 8 caracteres.")

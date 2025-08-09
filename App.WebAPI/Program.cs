@@ -25,7 +25,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 
 builder.Services.AddAuthorization(options =>
 {
-    var permissions = new[] { "" }; // TODO RAFAEL: colocar todas as permissões aqui
+    var permissions = new[] { "teste" }; // TODO RAFAEL: colocar todas as permissões aqui
 
     foreach (var permission in permissions)
     {
@@ -35,7 +35,11 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.Configure<JwtSettings>(
 builder.Configuration.GetSection("JwtSettings"));
-builder.Services.AddAuthentication("Bearer")
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer("Bearer", options =>
     {
         var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();

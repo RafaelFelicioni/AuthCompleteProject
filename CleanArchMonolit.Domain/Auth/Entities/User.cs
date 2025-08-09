@@ -5,6 +5,7 @@ namespace CleanArchMonolit.Domain.Auth.Entities
     public class User
     {
         public int Id { get; set; }
+        public bool Active { get; set; }
         [MaxLength(500)]
         public string Username { get; set; } = null!;
         [MaxLength(500)]
@@ -13,6 +14,8 @@ namespace CleanArchMonolit.Domain.Auth.Entities
         public string PasswordHash { get; set; } = null!;
         public int CompanyId { get; set; }
         public int ProfileId { get; set; }
+        [MaxLength(20)]
+        public string TaxId { get; set; }
         public Profiles Profile { get; set; } = null!;
         public ICollection<UserSystemPermissions> UserPermissions { get; set; }
     }
