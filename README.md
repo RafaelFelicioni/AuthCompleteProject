@@ -1,6 +1,6 @@
 A complete project for authentication using .net core
 
-Using clean archtecture and good archtecture, it is a "modularized monolyth" but it could transform it micro services easilly if needed
+Using clean archtecture, it is a "modularized monolyth" but it could transform it micro services easilly if needed
 
 Features:
 creation and update of users
