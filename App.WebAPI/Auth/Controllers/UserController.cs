@@ -17,7 +17,6 @@ namespace App.WebAPI.Auth.Controllers
         }
 
         [HttpPost("Create")]
-        [Authorize(Policy = "teste")]
         public async Task<IActionResult> Create([FromBody] CreateUserDTO dto)
         {
             var result = await _userService.CreateAsync(dto);

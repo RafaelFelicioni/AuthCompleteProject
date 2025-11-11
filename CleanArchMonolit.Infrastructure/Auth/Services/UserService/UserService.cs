@@ -60,30 +60,30 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
                 return Result<bool>.Fail("Já existe um usuário cadastrado com esse CPF, por favor corrija as informações e tente novamente.");
             }
 
-            user = new User()
-            {
-                Mail = dto.Email,
-                ProfileId = dto.ProfileId,
-                Username = dto.Username,
-                CompanyId = dto.CompanyId,
-                TaxId = dto.TaxId,
-                UserPermissions = new List<UserSystemPermissions>()
-            };
+            var profile = await _profileRepository.GetById(dto.ProfileId);
+            if (profile is null)
+                return Result<bool>.Fail("Perfil inválido.");
 
-            if (dto.PermissionList.Any())
-            {
-                foreach (var permission in dto.PermissionList)
-                {
-                    user.UserPermissions.Add(new UserSystemPermissions()
-                    {
-                        UserId = user.Id,
-                        SystemPermissionId = permission
-                    });
-                }
-            }
+            
 
-            user.PasswordHash = _hasher.HashPassword(user, dto.Password);
-            await _userRepository.AddAsync(user);
+            var newUser = new User(
+                id: 0, // EF
+                active: true,
+                username: dto.Username,
+                mail: dto.Email,
+                passwordHash: string.Empty,
+                companyId: dto.CompanyId,
+                profileId: dto.ProfileId,
+                taxId: dto.TaxId,
+                profile: profile
+            );
+            var hashedPassword = _hasher.HashPassword(user, dto.Password);
+            newUser.SetPasswordHash(hashedPassword);
+            // Let the aggregate manage its children
+            if (dto.PermissionList?.Any() == true)
+                newUser.AddPermissions(dto.PermissionList);
+
+            await _userRepository.AddAsync(newUser);
             await _userRepository.SaveChangesAsync();
             return Result<bool>.Ok(true);
         }
@@ -93,36 +93,25 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             var validator = new UpdateUserDTOValidator();
             var validation = validator.Validate(dto);
             if (!validation.IsValid)
-            {
-                var errors = validation.Errors.Select(e => e.ErrorMessage).ToArray();
-                return Result<bool>.Fail(errors);
-            }
+                return Result<bool>.Fail(validation.Errors.Select(e => e.ErrorMessage).ToArray());
 
-            var userValidation = await _userRepository.FirstOrDefaultAsync(x => x.Id != dto.Id && (x.Mail == dto.Email));
-            if (userValidation != null)
+            var emailTaken = await _userRepository
+                .FirstOrDefaultAsync(x => x.Id != dto.Id && x.Mail == dto.Email);
+            if (emailTaken != null)
                 return Result<bool>.Fail("Este email já está cadastrado para outro usuário, por favor altere o email e tente novamente");
 
-            var user = await _userRepository.FindAsync(dto.Id);
+            var user = await _userRepository
+                .FindAsync(dto.Id);
+
             if (user == null)
                 return Result<bool>.Fail("Não foi possivel encontrar o usuário informado, por favor entre em contato com o suporte.");
 
-            user.Mail = dto.Email;
-            user.ProfileId = dto.ProfileId;
-            user.Username = dto.Username;
-            user.CompanyId = dto.CompanyId;
-            if (user.UserPermissions == null)
-                user.UserPermissions = new List<UserSystemPermissions>();
+            user.ChangeEmail(dto.Email);
+            user.Rename(dto.Username);
+            user.MoveToCompany(dto.CompanyId);
+            user.ChangeProfile(dto.ProfileId);
 
-            var userPermissions = user.UserPermissions.Select(x => x.SystemPermissionId).ToList();
-            dto.PermissionList = dto.PermissionList.Where(x => !userPermissions.Contains(x)).ToList();
-            foreach (var permission in dto.PermissionList)
-            {
-                user.UserPermissions.Add(new UserSystemPermissions()
-                {
-                    UserId = user.Id,
-                    SystemPermissionId = permission
-                });
-            }
+            user.ReplacePermissions(dto.PermissionList ?? Enumerable.Empty<int>());
 
             await _userRepository.SaveChangesAsync();
             return Result<bool>.Ok(true);
@@ -138,7 +127,7 @@ namespace CleanArchMonolit.Infrastructure.Auth.Services.UserService
             if (result == PasswordVerificationResult.Failed)
                 return Result<bool>.Fail("Senha antiga informada não corresponde a senha na base de dados, por favor tente novamente.");
 
-            user.PasswordHash = _hasher.HashPassword(user, newPassword);
+            user.SetPasswordHash(_hasher.HashPassword(user, newPassword));
             return Result<bool>.Ok(true);
         }
 

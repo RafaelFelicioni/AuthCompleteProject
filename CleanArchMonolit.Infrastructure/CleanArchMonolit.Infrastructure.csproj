@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth\Data\Migrations\" />
     <Folder Include="Company\Data\Migrations\" />
     <Folder Include="Payments\" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 using CleanArchMonolit.Application.Auth.Interfaces.PermissionsInterfaces;
 using CleanArchMonolit.Application.Auth.Interfaces.ProfileInterfaces;
 using CleanArchMonolit.Application.Auth.Interfaces.UserInterfaces;
+using CleanArchMonolit.Application.Company.Interfaces.CompanyInterfaces;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.PermissionRepositories;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.ProfileRepositories;
 using CleanArchMonolit.Infrastructure.Auth.Repositories.UserRepositories;
@@ -9,6 +10,8 @@ using CleanArchMonolit.Infrastructure.Auth.Services.AuthService;
 using CleanArchMonolit.Infrastructure.Auth.Services.PermissionService;
 using CleanArchMonolit.Infrastructure.Auth.Services.ProfileService;
 using CleanArchMonolit.Infrastructure.Auth.Services.UserService;
+using CleanArchMonolit.Infrastructure.Company.Repositories.CompanyRepository;
+using CleanArchMonolit.Infrastructure.Company.Services;
 using CleanArchMonolit.Infrastructure.DataShared.HttpContextService;
 using CleanArchMonolit.Shared.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +34,11 @@ namespace App.WebAPI.Utils
             builder.Services.AddScoped<IPermissionService, PermissionService>();
             #endregion
 
+            #region CompanyServices
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
+           
+            #endregion
+
             builder.Services.AddScoped<IHttpContextService, HttpContextService>();
             builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
             builder.Services.ApplyCommonSettings(builder.Configuration);
@@ -42,6 +50,10 @@ namespace App.WebAPI.Utils
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            #endregion
+
+            #region CompanyRepos
+            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             #endregion
         }
     }
